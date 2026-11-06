@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1F20" />
+      <stop offset="100%" stop-color="#131314" />
+    </linearGradient>
+    <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4285F4" />
+      <stop offset="50%" stop-color="#9B72CB" />
+      <stop offset="100%" stop-color="#D96570" />
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="44" fill="url(#bgGrad)" stroke="#3C4043" stroke-width="2" />
+  <text x="96" y="116" text-anchor="middle" font-family="system-ui, -apple-system, 'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="68" letter-spacing="-3" fill="url(#gemGrad)">MV.</text>
+</svg>

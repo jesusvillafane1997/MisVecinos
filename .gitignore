@@ -1,0 +1,33 @@
+# Environment variables & secrets
+.env
+.env*.local
+.env.production
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Android build outputs & local config
+android/app/build/
+android/.gradle/
+android/local.properties
+android/build/
+*.apk
+*.aab
+
+# iOS build outputs & Pods
+ios/App/Pods/
+ios/App/build/
+ios/App/Podfile.lock
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+*.ipa
+*.xcarchive
+
+# Temporary files & Logs
+build/
+dist/
+*.log
+.DS_Store
+Thumbs.db

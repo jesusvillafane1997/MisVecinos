@@ -1,0 +1,27 @@
+{
+  "name": "Mis Vecinos — Córdoba Capital",
+  "short_name": "Mis Vecinos",
+  "description": "Red vecinal hiperlocal en tiempo real para los 375 barrios de Córdoba Capital.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#131314",
+  "theme_color": "#131314",
+  "lang": "es-AR",
+  "categories": ["social", "lifestyle", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

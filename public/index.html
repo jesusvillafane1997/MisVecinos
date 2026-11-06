@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es-AR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#131314" id="metaThemeColor" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mis Vecinos" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg" />
+  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+  <title>Mis Vecinos · App Vecinal de Córdoba, Argentina</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ========================================================================
+       TOP HEADER BAR (Desktop & Compact Mobile HUD Header)
+       ======================================================================== -->
+  <header class="app-topbar">
+    <div class="brand-wrap">
+      <div class="brand-title" aria-label="Mis Vecinos">
+        <span class="brand-wordmark-primary">Mis</span><span class="brand-wordmark-accent">Vecinos</span><span class="brand-wordmark-dot">.</span>
+      </div>
+    </div>
+
+    <!-- Center/Right Barrio HUD Pill (Opens Bottom-Sheet Barrio Drawer) -->
+    <div class="topbar-hud-center">
+      <button id="btnHeaderBarrioHud" class="barrio-hud-pill" type="button" title="Cambiar barrio o detectar ubicación">
+        <span class="live-dot"></span>
+        <span id="headerBarrioHudText">[ CBA // NUEVA CORDOBA ]</span>
+        <svg class="mini-icon" style="width:13px;height:13px;opacity:0.75;" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Emergency Shield Icon (Mobile Slide-Down Drawer Trigger + Desktop Quick Toggle) -->
+      <button id="btnEmergencyShield" class="shield-icon-btn" type="button" title="Contactos de Emergencia (101, 107, 103)" aria-expanded="false">
+        <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span class="shield-btn-label">SOS</span>
+      </button>
+
+      <button id="btnThemeToggle" class="pill-btn desktop-only-btn" type="button" title="Cambiar modo claro / oscuro">
+        <span id="themeIcon" style="display:inline-flex;align-items:center;">
+          <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </span>
+        <span id="themeLabel">Modo Claro</span>
+      </button>
+
+      <button id="btnOpenAuthModal" class="pill-btn desktop-only-btn" type="button">
+        <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>
+        <span id="topAuthBtnText">Mi Cuenta / Barrio</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       SLIDE-DOWN EMERGENCY CONTACTS DRAWER (101, 107, 103)
+       ======================================================================== -->
+  <div id="emergencySlideDrawer" class="emergency-slide-drawer hidden" role="region" aria-label="Contactos de emergencia de Córdoba">
+    <div class="emergency-drawer-inner">
+      <div class="emergency-drawer-header">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <svg class="mini-icon" style="color:var(--gemini-coral);" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>
+          <strong style="font-size:0.88rem;">Central de Emergencias · Córdoba Capital</strong>
+        </div>
+        <button id="btnCloseEmergencyDrawer" class="pill-btn" type="button" style="padding:4px 10px;font-size:0.75rem;">✕ Cerrar</button>
+      </div>
+      <div class="emergency-drawer-grid">
+        <a href="tel:101" class="emergency-quick-card">
+          <span class="emergency-quick-num">101 / 911</span>
+          <span class="emergency-quick-label">Policía de Córdoba</span>
+        </a>
+        <a href="tel:107" class="emergency-quick-card">
+          <span class="emergency-quick-num">107</span>
+          <span class="emergency-quick-label">Emergencias Médicas</span>
+        </a>
+        <a href="tel:103" class="emergency-quick-card">
+          <span class="emergency-quick-num">103</span>
+          <span class="emergency-quick-label">Defensa Civil</span>
+        </a>
+        <a href="tel:100" class="emergency-quick-card">
+          <span class="emergency-quick-num">100</span>
+          <span class="emergency-quick-label">Bomberos</span>
+        </a>
+      </div>
+      <div class="emergency-drawer-sub">
+        <span>⚡ EPEC: <strong>0800-777-0800</strong></span>
+        <span>💧 Aguas Cba: <strong>0800-800-2482</strong></span>
+        <span>🔥 ECOGAS: <strong>0800-555-6677</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MAIN 3-COLUMN LAYOUT (Persistent 3-Column >=768px, Edge-to-Edge <768px)
+       ======================================================================== -->
+  <main class="app-shell">
+    <!-- LEFT SIDEBAR (Desktop >=768px) -->
+    <aside class="left-sidebar">
+      <!-- User Profile Snippet -->
+      <section class="gemini-card user-profile-card" aria-label="Perfil de vecino">
+        <div class="profile-row">
+          <img id="sidebarAvatar" class="avatar-img" src="" alt="Avatar de usuario" />
+          <div class="profile-meta">
+            <div id="sidebarName" class="profile-name">Cargando...</div>
+            <div id="sidebarUsername" class="profile-handle">@vecino</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <span class="barrio-badge" title="Tu barrio asignado">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+            <span id="sidebarBarrioBadge">Nueva Córdoba</span>
+          </span>
+          <button id="btnSwitchAccount" class="pill-btn" style="padding:5px 11px; font-size:0.76rem;" type="button">
+            Cambiar / Salir
+          </button>
+        </div>
+      </section>
+
+      <!-- Main Navigation Links -->
+      <nav class="gemini-card sidebar-nav" aria-label="Navegación principal">
+        <button class="nav-item active" data-nav="muro" type="button">
+          <span class="nav-item-left">
+            <span class="nav-icon" style="display:inline-flex;">
+              <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
+            </span>
+            <span>Muro del Barrio</span>
+          </span>
+          <span id="badgeMuroCount" class="nav-badge">0</span>
+        </button>
+
+        <button class="nav-item" data-nav="chat" type="button">
+          <span class="nav-item-left">
+            <span class="nav-icon" style="display:inline-flex;">
+              <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
+            </span>
+            <span>Chat Comunitario</span>
+          </span>
+          <span class="nav-badge" style="display:inline-flex; align-items:center; gap:5px;">
+            <span class="live-dot"></span> Vivo
+          </span>
+        </button>
+
+        <button class="nav-item" data-nav="alertas" type="button">
+          <span class="nav-item-left">
+            <span class="nav-icon" style="display:inline-flex;">
+              <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </span>
+            <span>Avisos &amp; Seguridad</span>
+          </span>
+          <span id="badgeAlertasCount" class="nav-badge">0</span>
+        </button>
+
+        <button class="nav-item" data-nav="clasificados" type="button">
+          <span class="nav-item-left">
+            <span class="nav-icon" style="display:inline-flex;">
+              <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </span>
+            <span>Compra / Venta &amp; Servicios</span>
+          </span>
+          <span id="badgeClasificadosCount" class="nav-badge">0</span>
+        </button>
+      </nav>
+
+      <!-- Barrio Switcher / Filter -->
+      <section class="gemini-card barrio-switcher-card" aria-label="Filtro de Barrio">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span class="section-label">Explorar Barrios</span>
+          <span style="font-size:0.75rem; color:var(--gemini-blue); font-weight:600;">Córdoba Capital</span>
+        </div>
+
+        <div class="scope-pills" role="group" aria-label="Alcance territorial">
+          <button class="scope-pill active" data-scope="mi-barrio" type="button">Mi Barrio</button>
+          <button class="scope-pill" data-scope="cercanos" type="button">Cercanos</button>
+          <button class="scope-pill" data-scope="todos" type="button">Toda Cba</button>
+        </div>
+
+        <div>
+          <label for="sidebarBarrioSelect" class="form-label" style="font-size:0.76rem; display:block; margin-bottom:5px;">
+            Ver actividad de otro distrito:
+          </label>
+          <select id="sidebarBarrioSelect" class="gemini-select"></select>
+        </div>
+      </section>
+    </aside>
+
+    <!-- CENTER MAIN COLUMN -->
+    <section class="main-column">
+      <!-- Barrio Active Context Hero -->
+      <div id="heroContextBanner" class="barrio-hero-banner">
+        <div class="barrio-hero-top">
+          <div>
+            <h1 class="barrio-hero-title">
+              <span id="heroBarrioTitle">Barrio Nueva Córdoba</span>
+              <span id="heroZoneBadge" class="gemini-spark-badge">Zona Centro-Sur</span>
+            </h1>
+            <p id="heroBarrioDesc" class="barrio-hero-desc">
+              Corazón universitario y cultural, Parque Sarmiento, Buen Pastor y Av. Chacabuco.
+            </p>
+          </div>
+          <button id="btnQuickLocateBarrio" class="pill-btn" type="button" title="Volver a mi barrio asignado">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+            <span>Ir a mi barrio</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ====================================================================
+           FEED VIEW (Muro del Barrio, Avisos & Seguridad, Compra/Venta)
+           ==================================================================== -->
+      <div id="viewFeedSection" style="display:flex; flex-direction:column; gap:18px;">
+        <!-- Mobile Composer Sheet Backdrop (<768px) -->
+        <div id="mobileComposerBackdrop" class="mobile-sheet-backdrop hidden"></div>
+
+        <!-- Post Composer (Inline on Desktop >=768px, Bottom-Sheet Modal on Mobile <768px) -->
+        <section id="postComposerCard" class="gemini-card composer-card" aria-label="Crear publicación">
+          <div class="mobile-composer-sheet-header">
+            <div class="sheet-drag-handle"></div>
+            <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+              <strong style="font-size:0.98rem;">Nueva Publicación en el Barrio</strong>
+              <button id="btnCloseMobileComposer" class="pill-btn" type="button" style="padding:4px 10px;font-size:0.78rem;">✕</button>
+            </div>
+          </div>
+
+          <div class="composer-top">
+            <img id="composerAvatar" class="avatar-img avatar-sm" src="" alt="Tu avatar" />
+            <div style="flex:1; display:flex; flex-direction:column; gap:10px;">
+              <textarea
+                id="composerTextarea"
+                class="gemini-textarea composer-textarea"
+                placeholder="¿Qué está pasando en tu cuadra o barrio hoy? Compartí novedades, alertas o recomendaciones..."
+              ></textarea>
+
+              <div id="composerImagePreviewWrap" class="attachment-preview hidden">
+                <img id="composerImagePreview" src="" alt="Vista previa de imagen" />
+                <button id="btnRemoveComposerImage" class="remove-img-btn" type="button">✕ Quitar imagen</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <span class="section-label" style="font-size:0.72rem;">Categoría de la publicación:</span>
+            <div id="composerCategoryGroup" class="category-selector-group">
+              <button type="button" class="cat-chip selected" data-cat="Novedades">
+                <span>Novedades</span>
+              </button>
+              <button type="button" class="cat-chip" data-cat="Seguridad">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <span>Seguridad</span>
+              </button>
+              <button type="button" class="cat-chip" data-cat="Mascotas">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>
+                <span>Mascotas</span>
+              </button>
+              <button type="button" class="cat-chip" data-cat="Recomendaciones">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>
+                <span>Recomendaciones</span>
+              </button>
+              <button type="button" class="cat-chip" data-cat="Cortes">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Cortes</span>
+              </button>
+              <button type="button" class="cat-chip" data-cat="Servicios">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                <span>Servicios</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="composer-controls">
+            <div class="composer-attachments">
+              <label class="pill-btn" style="cursor:pointer; padding:6px 12px; font-size:0.8rem;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2Z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>Adjuntar Foto</span>
+                <input id="composerFileInput" type="file" accept="image/*" class="hidden" />
+              </label>
+            </div>
+
+            <button id="btnPublishPost" class="btn-gemini-primary" type="button">
+              <span>Publicar en el Barrio</span>
+            </button>
+          </div>
+          <div id="composerError" class="error-msg hidden"></div>
+        </section>
+
+        <!-- Filter Tabs & Search Bar -->
+        <div class="feed-controls-row" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+          <div id="feedFilterTabs" class="feed-tabs-bar" role="tablist">
+            <button class="feed-tab active" data-filter="Todos" type="button">Todos</button>
+            <button class="feed-tab" data-filter="Alertas" type="button">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>Alertas &amp; Cortes</span>
+            </button>
+            <button class="feed-tab" data-filter="Servicios" type="button">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+              <span>Servicios</span>
+            </button>
+            <button class="feed-tab" data-filter="Recomendaciones" type="button">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76Z"/></svg>
+              <span>Recomendaciones</span>
+            </button>
+          </div>
+
+          <input
+            id="feedSearchInput"
+            type="search"
+            class="gemini-input feed-search-box"
+            style="max-width:240px; padding:8px 14px; font-size:0.84rem;"
+            placeholder="◎ Buscar en el barrio..."
+          />
+        </div>
+
+        <!-- Dynamic Feed Stream -->
+        <div id="feedStreamContainer" style="display:flex; flex-direction:column; gap:16px;"></div>
+      </div>
+
+      <!-- ====================================================================
+           LIVE BARRIO CHAT VIEW (Chat Comunitario)
+           ==================================================================== -->
+      <section id="viewChatSection" class="gemini-card chat-container hidden" aria-label="Chat Comunitario en vivo">
+        <div class="chat-header">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="live-dot"></span>
+            <div>
+              <h2 id="chatRoomTitle" style="font-size:1.02rem;">Sala Vecinal · Nueva Córdoba</h2>
+              <span id="chatOnlineMeta" style="font-size:0.76rem; color:var(--text-secondary);">
+                Suscripción Realtime activa · Canal exclusivo del barrio
+              </span>
+            </div>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button id="btnChatSoundToggle" class="pill-btn" type="button" style="padding:6px 11px; font-size:0.78rem;">
+              <span id="chatSoundIcon" style="display:inline-flex;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </span>
+              <span id="chatSoundLabel" class="hide-xs">Sonido Activo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages Stream -->
+        <div id="chatMessagesList" class="chat-messages-area"></div>
+
+        <!-- Chat Input Bar (Locks above virtual keyboard on mobile) -->
+        <form id="chatMessageForm" class="chat-input-bar">
+          <input
+            id="chatMessageInput"
+            type="text"
+            class="gemini-input"
+            placeholder="Escribí un mensaje en vivo para los vecinos..."
+            autocomplete="off"
+          />
+          <button id="btnSendChatMsg" type="submit" class="btn-gemini-primary" style="flex-shrink:0; padding:10px 16px;">
+            <span>Enviar</span>
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+      </section>
+
+      <!-- ====================================================================
+           MOBILE PROFILE & BARRIO PULSE VIEW (`Perfil` tab on <768px)
+           ==================================================================== -->
+      <section id="viewProfileSection" class="gemini-card hidden" style="display:flex; flex-direction:column; gap:18px;" aria-label="Mi Perfil y Ajustes">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <img id="mobProfileAvatar" class="avatar-img" style="width:60px;height:60px;" src="" alt="Avatar de perfil" />
+            <div>
+              <h2 id="mobProfileName" style="font-size:1.15rem;">Invitado</h2>
+              <div id="mobProfileHandle" class="profile-handle">@sin_sesion</div>
+              <span id="mobProfileBarrioBadge" class="barrio-badge" style="margin-top:6px;">Nueva Córdoba</span>
+            </div>
+          </div>
+          <button id="btnMobOpenAuth" class="btn-gemini-primary" type="button">
+            Mi Cuenta / Sesión
+          </button>
+        </div>
+
+        <div style="border-top:1px solid var(--border-subtle); padding-top:14px; display:flex; flex-direction:column; gap:12px;">
+          <span class="section-label">Preferencias &amp; Accesos Rápidos</span>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <button id="btnMobThemeToggle" class="pill-btn" type="button" style="justify-content:center; padding:12px;">
+              <span>☼ / ☾ Cambiar Tema</span>
+            </button>
+            <button id="btnMobOpenBarrioSheet" class="pill-btn" type="button" style="justify-content:center; padding:12px;">
+              <span>◎ Cambiar Distrito</span>
+            </button>
+            <button id="btnMobGoClasificados" class="pill-btn" type="button" style="justify-content:center; padding:12px; grid-column:span 2;">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Ver Compra / Venta &amp; Servicios del Barrio</span>
+            </button>
+            <button id="btnInstallPwa" class="btn-gemini-primary hidden" type="button" style="justify-content:center; padding:12px; grid-column:span 2;">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Instalar App en mi Teléfono</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid var(--border-subtle); padding-top:14px; display:flex; flex-direction:column; gap:8px;">
+          <span class="section-label">Pulso de tu Barrio Activo</span>
+          <div style="font-size:0.86rem; display:flex; flex-direction:column; gap:6px;">
+            <div><strong>CPC Municipal:</strong> <span id="mobCpcInfo">CPC Mercado de la Ciudad</span></div>
+            <div><strong>Comisaría Jurisdicción:</strong> <span id="mobCommissaryInfo">Comisaría 4ª</span></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- RIGHT SIDEBAR (Barrio Pulse Panel — Persistent on Desktop >=768px) -->
+    <aside class="right-sidebar">
+      <section class="gemini-card">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span class="section-label">Pulso del Barrio</span>
+          <span id="rightPostalCode" class="gemini-spark-badge">CP X5000</span>
+        </div>
+        <div style="font-size:0.85rem; display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <strong style="color:var(--text-secondary); display:block; font-size:0.75rem;">CPC Municipal:</strong>
+            <span id="rightCpcInfo">CPC Mercado de la Ciudad</span>
+          </div>
+          <div>
+            <strong style="color:var(--text-secondary); display:block; font-size:0.75rem;">Dependencia Policial:</strong>
+            <span id="rightCommissaryInfo">Comisaría 4ª (Av. Hipólito Yrigoyen 360)</span>
+          </div>
+          <div>
+            <strong style="color:var(--text-secondary); display:block; font-size:0.75rem;">Barrios Colindantes:</strong>
+            <div id="rightNeighborPills" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="gemini-card">
+        <span class="section-label">Guardia &amp; Emergencias Córdoba</span>
+        <div class="emergency-grid">
+          <div class="emergency-tile">
+            <span class="emergency-num">911 / 101</span>
+            <span class="emergency-label">Policía de Córdoba</span>
+          </div>
+          <div class="emergency-tile">
+            <span class="emergency-num">107</span>
+            <span class="emergency-label">Emergencias Médicas</span>
+          </div>
+          <div class="emergency-tile">
+            <span class="emergency-num">100</span>
+            <span class="emergency-label">Bomberos</span>
+          </div>
+          <div class="emergency-tile">
+            <span class="emergency-num">103 / 108</span>
+            <span class="emergency-label">Defensa Civil</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; font-size:0.78rem; color:var(--text-secondary); display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span><strong>EPEC Guardia:</strong> 0800-777-0800</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0Z"/></svg>
+            <span><strong>Aguas Cordobesas:</strong> 0800-800-2482</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></svg>
+            <span><strong>ECOGAS Emergencias:</strong> 0800-555-6677</span>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ========================================================================
+       FLOATING FROSTED-GLASS ACTION BUTTON (`+`) ON MOBILE (<768px)
+       ======================================================================== -->
+  <button id="btnMobileFabCompose" class="mobile-fab-compose" type="button" title="Crear nueva publicación en el barrio" aria-label="Crear publicación">
+    <span>+</span>
+  </button>
+
+  <!-- ========================================================================
+       BARRIO HUD BOTTOM-SHEET DRAWER (Triggered by tapping `[ CBA // ... ]`)
+       ======================================================================== -->
+  <div id="barrioSheetBackdrop" class="mobile-sheet-backdrop hidden" role="dialog" aria-modal="true" aria-label="Selector y radar de barrio">
+    <div class="barrio-bottom-sheet">
+      <div class="sheet-drag-handle"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div>
+          <h3 style="font-size:1.08rem;">Seleccionar Barrio · Córdoba Capital</h3>
+          <span style="font-size:0.78rem;color:var(--text-secondary);">Detectá tu ubicación con GPS o filtrá otro barrio</span>
+        </div>
+        <button id="btnCloseBarrioSheet" class="pill-btn" type="button" style="padding:5px 11px;font-size:0.78rem;">✕</button>
+      </div>
+
+      <div class="scope-pills" role="group" aria-label="Alcance territorial">
+        <button class="scope-pill active" data-scope="mi-barrio" type="button">Mi Barrio</button>
+        <button class="scope-pill" data-scope="cercanos" type="button">Cercanos</button>
+        <button class="scope-pill" data-scope="todos" type="button">Toda Cba</button>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="btnSheetGeoLocate" type="button" class="btn-gemini-primary" style="flex:1;padding:9px 14px;font-size:0.82rem;">
+          <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
+          <span>Usar mi ubicación actual</span>
+        </button>
+        <button id="btnSheetSimulateGps" type="button" class="pill-btn" style="padding:9px 12px;font-size:0.8rem;">
+          <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+          <span>Simular GPS</span>
+        </button>
+      </div>
+
+      <div id="sheetGeoStatus" style="font-size:0.8rem;font-weight:600;color:var(--gemini-blue);"></div>
+
+      <input
+        id="sheetBarrioSearchInput"
+        type="search"
+        class="gemini-input"
+        placeholder="◎ Buscar barrio (Nueva Córdoba, Güemes, Alberdi, Cerro...)"
+        style="padding:9px 14px;font-size:0.86rem;"
+      />
+
+      <div id="sheetBarrioList" class="barrio-dropdown-list" style="max-height:230px;"></div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MOBILE BOTTOM NAVIGATION DOCK (<768px: Muro, Chat, Alertas, Perfil)
+       ======================================================================== -->
+  <nav class="mobile-bottom-nav" aria-label="Navegación móvil">
+    <button class="mob-nav-btn active" data-nav="muro" type="button">
+      <span class="dock-glow-line"></span>
+      <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5Z"/></svg>
+      <span>Muro</span>
+    </button>
+    <button class="mob-nav-btn" data-nav="chat" type="button">
+      <span class="dock-glow-line"></span>
+      <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>
+      <span>Chat</span>
+    </button>
+    <button class="mob-nav-btn" data-nav="alertas" type="button">
+      <span class="dock-glow-line"></span>
+      <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>Alertas</span>
+    </button>
+    <button class="mob-nav-btn" data-nav="perfil" type="button">
+      <span class="dock-glow-line"></span>
+      <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>
+      <span>Perfil</span>
+    </button>
+  </nav>
+
+  <!-- ========================================================================
+       AUTHENTICATION & BARRIO ONBOARDING MODAL
+       ======================================================================== -->
+  <div id="authModalBackdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+    <div class="auth-modal">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <h2 id="authModalTitle" style="font-size:1.35rem;">Bienvenido a <span class="gemini-gradient-text">Mis Vecinos</span></h2>
+          <p style="font-size:0.84rem; color:var(--text-secondary);">
+            Conectate con los vecinos de tu barrio en Córdoba Capital
+          </p>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button id="btnSignOutSession" class="pill-btn hidden" type="button" style="padding:6px 11px; font-size:0.76rem; color:var(--gemini-coral);" title="Cerrar sesión actual">
+            Salir
+          </button>
+        </div>
+      </div>
+
+      <!-- Mode Switcher: Crear Cuenta vs Iniciar Sesión -->
+      <div class="auth-tabs">
+        <button id="tabRegisterMode" class="auth-tab active" type="button">Crear Cuenta Vecinal</button>
+        <button id="tabLoginMode" class="auth-tab" type="button">Iniciar Sesión</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="hidden" style="display:flex; flex-direction:column; gap:14px;">
+        <div class="form-group">
+          <label class="form-label" for="loginIdentity">Correo electrónico o @usuario</label>
+          <input id="loginIdentity" type="text" class="gemini-input" placeholder="ej: vecino@cordoba.ar o tu_usuario" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Contraseña</label>
+          <input id="loginPassword" type="password" class="gemini-input" placeholder="Ingresá tu contraseña (mín. 6 caracteres)" autocomplete="current-password" />
+        </div>
+        <div id="loginErrorMsg" class="error-msg hidden"></div>
+
+        <button id="btnLoginSubmit" type="submit" class="btn-gemini-primary" style="width:100%; padding:12px;">
+          Ingresar a Mi Barrio
+        </button>
+
+        <!-- Supabase OAuth & Passwordless Magic Link Options -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <button id="btnSupabaseGoogleOAuth" type="button" class="pill-btn" style="justify-content:center; padding:9px 12px; font-size:0.78rem;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+            <span>Entrar con Google</span>
+          </button>
+          <button id="btnSupabaseMagicLink" type="button" class="pill-btn" style="justify-content:center; padding:9px 12px; font-size:0.78rem;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>Enviar Magic Link</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- REGISTER & BARRIO ONBOARDING FORM -->
+      <form id="registerForm" style="display:flex; flex-direction:column; gap:14px;">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label" for="regFullName">Nombre y Apellido *</label>
+            <input id="regFullName" type="text" class="gemini-input" placeholder="Ej: Santiago Pereyra" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="regUsername">Nombre de usuario (@) *</label>
+            <input id="regUsername" type="text" class="gemini-input" placeholder="Ej: santi_cba" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Correo electrónico *</label>
+            <input id="regEmail" type="email" class="gemini-input" placeholder="santi@ejemplo.com.ar" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Contraseña (mín. 6 caract.) *</label>
+            <input id="regPassword" type="password" class="gemini-input" placeholder="••••••••" />
+          </div>
+        </div>
+
+        <!-- Avatar Selector & Upload -->
+        <div class="form-group">
+          <label class="form-label">Foto de perfil o avatar vecinal</label>
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+            <div id="avatarPickerGrid" class="avatar-picker-grid"></div>
+            <label class="pill-btn" style="cursor:pointer; font-size:0.78rem;">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Subir foto propia</span>
+              <input id="regAvatarUpload" type="file" accept="image/*" class="hidden" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Neighborhood (Barrio) Auto-Detection + Searchable Selector -->
+        <div class="geo-locate-box">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+            <div>
+              <strong style="font-size:0.9rem; display:flex; align-items:center; gap:6px;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+                <span>Selección de Barrio en Córdoba Capital</span>
+              </strong>
+              <span style="font-size:0.78rem; color:var(--text-secondary);">
+                Detectá tu ubicación con GPS o buscá tu barrio manualmente
+              </span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button id="btnUseGeolocation" type="button" class="btn-gemini-primary" style="padding:8px 14px; font-size:0.8rem;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7"/></svg>
+                <span>Usar mi ubicación actual</span>
+              </button>
+              <button id="btnSimulateCordobaGps" type="button" class="pill-btn" style="padding:8px 11px; font-size:0.76rem;" title="Simular coordenadas dentro de Córdoba Capital">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                <span>Simular GPS Cba</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="geoStatusText" style="font-size:0.8rem; font-weight:600; color:var(--gemini-blue);"></div>
+
+          <div>
+            <input
+              id="barrioSearchInput"
+              type="text"
+              class="gemini-input"
+              placeholder="◎ Buscar barrio (ej: Nueva Córdoba, Güemes, Alberdi, Cerro, Urca...)"
+              style="padding:9px 12px; font-size:0.85rem;"
+            />
+            <div id="barrioSearchDropdown" class="barrio-dropdown-list"></div>
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.84rem;">
+            <span>Barrio seleccionado:</span>
+            <strong id="selectedBarrioDisplay" class="gemini-spark-badge">Nueva Córdoba (Zona Centro-Sur)</strong>
+          </div>
+        </div>
+
+        <div id="registerErrorMsg" class="error-msg hidden"></div>
+
+        <button id="btnRegisterSubmit" type="submit" class="btn-gemini-primary" style="width:100%; padding:12px;">
+          Unirme a Mi Barrio y Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Supabase JS SDK v2 + Mis Vecinos Supabase Auth Connector -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="data.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
