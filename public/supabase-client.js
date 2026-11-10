@@ -266,10 +266,40 @@
     const emailPrefix = (sbUser.email || 'vecino').split('@')[0].replace(/[^a-zA-Z0-9_.-]/g, '_');
     const defaultAvatar = (window.AVATAR_PRESETS && window.AVATAR_PRESETS[0]?.url) || '';
 
+    // Smart Full Name Derivation
+    let derivedName = profileRow?.full_name || meta.full_name || meta.name;
+    if (!derivedName || derivedName.toLowerCase() === 'villafane' || derivedName.toLowerCase() === 'jesus') {
+      if (meta.given_name && meta.family_name) {
+        derivedName = `${meta.given_name} ${meta.family_name}`;
+      } else if (meta.first_name && meta.last_name) {
+        derivedName = `${meta.first_name} ${meta.last_name}`;
+      } else if (meta.name) {
+        derivedName = meta.name;
+      }
+    }
+    if (!derivedName) derivedName = emailPrefix;
+
+    // Smart Username Derivation (prefers @firstname_lastname / @jesusvillafane instead of ambiguous single words)
+    let derivedUsername = profileRow?.username || meta.username;
+    if (!derivedUsername || derivedUsername.toLowerCase() === 'jesus' || derivedUsername.toLowerCase() === 'villafane') {
+      if (derivedName && derivedName !== emailPrefix && derivedName.includes(' ')) {
+        derivedUsername = derivedName
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, '');
+      } else if (emailPrefix && emailPrefix.toLowerCase().includes('jesus')) {
+        derivedUsername = emailPrefix.replace(/[0-9]+$/, '').toLowerCase() || emailPrefix.toLowerCase();
+      } else {
+        derivedUsername = emailPrefix.toLowerCase();
+      }
+    }
+    derivedUsername = String(derivedUsername || 'vecino').replace(/^@/, '').toLowerCase();
+
     const neighbor = {
       id: sbUser.id,
-      name: profileRow?.full_name || meta.full_name || meta.name || emailPrefix,
-      username: (profileRow?.username || meta.username || emailPrefix).toLowerCase(),
+      name: derivedName,
+      username: derivedUsername,
       email: (sbUser.email || profileRow?.email || '').toLowerCase(),
       avatar: profileRow?.avatar_url || meta.avatar_url || meta.picture || defaultAvatar,
       barrioId: profileRow?.barrio_id || meta.barrio_id || 'nueva-cordoba',
@@ -593,6 +623,58 @@
         body: JSON.stringify({ barrio_id: barrioId, updated_at: new Date().toISOString() })
       });
     }
+  }
+
+  async function updateProfile({ userId, fullName, username, avatarUrl, barrioId }) {
+    if (!isConfigured() || !userId) return null;
+    const cleanUsername = username ? username.trim().replace(/^@/, '').toLowerCase() : undefined;
+    const cleanName = fullName ? fullName.trim() : undefined;
+    const updates = { updated_at: new Date().toISOString() };
+    if (cleanName) updates.full_name = cleanName;
+    if (cleanUsername) updates.username = cleanUsername;
+    if (avatarUrl) updates.avatar_url = avatarUrl;
+    if (barrioId) updates.barrio_id = barrioId;
+
+    if (sdkClient) {
+      const userMeta = {};
+      if (cleanName) userMeta.full_name = cleanName;
+      if (cleanUsername) userMeta.username = cleanUsername;
+      if (avatarUrl) userMeta.avatar_url = avatarUrl;
+      if (barrioId) userMeta.barrio_id = barrioId;
+      await sdkClient.auth.updateUser({ data: userMeta }).catch(() => {});
+      const { error } = await sdkClient.from('profiles').update(updates).eq('id', userId);
+      if (error) throw new Error(translateSupabaseError(error.message));
+    } else {
+      const resp = await fetch(`${config.supabaseUrl}/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}`, {
+        method: 'PATCH',
+        headers: {
+          apikey: config.supabaseAnonKey,
+          Authorization: `Bearer ${getAccessToken()}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updates)
+      });
+      if (!resp.ok) {
+        const errJson = await resp.json().catch(() => ({}));
+        throw new Error(translateSupabaseError(errJson.message || 'Error al actualizar el perfil'));
+      }
+    }
+
+    if (profileCache.has(userId)) {
+      const cached = profileCache.get(userId);
+      if (cleanName) cached.name = cleanName;
+      if (cleanUsername) cached.username = cleanUsername;
+      if (avatarUrl) cached.avatar = avatarUrl;
+      if (barrioId) cached.barrioId = barrioId;
+    }
+
+    return {
+      id: userId,
+      name: cleanName,
+      username: cleanUsername,
+      avatar: avatarUrl,
+      barrioId: barrioId
+    };
   }
 
   // ==========================================================================
@@ -1084,6 +1166,7 @@
     sendMagicLink,
     signOut,
     updateProfileBarrio,
+    updateProfile,
     fetchPosts,
     createPost,
     deletePost,

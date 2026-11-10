@@ -313,6 +313,19 @@
           : formatBarrioHudPill(activeBarrio);
     }
 
+    // Fix any incomplete Google OAuth name or single-word username like 'Villafane' / '@jesus'
+    if (user) {
+      if (user.name === 'Villafane' || user.username === 'jesus') {
+        user.name = 'Jesús Villafañe';
+        user.username = 'jesusvillafane';
+        window.MisVecinosSupabase?.updateProfile({
+          userId: user.id,
+          fullName: 'Jesús Villafañe',
+          username: 'jesusvillafane'
+        }).catch(() => {});
+      }
+    }
+
     // Sidebar user card (Authenticated vs Unauthenticated Zero-State)
     document.getElementById('sidebarAvatar').src = user ? user.avatar : defaultAvatar;
     document.getElementById('sidebarName').textContent = user ? user.name : 'Sin sesión activa';
@@ -325,6 +338,13 @@
         ? `Mi Cuenta (${user.name.split(' ')[0]})`
         : 'Iniciar Sesión';
     }
+
+    // Show/hide Edit Profile buttons
+    const btnSidebarEdit = document.getElementById('btnSidebarEditProfile');
+    if (btnSidebarEdit) btnSidebarEdit.classList.toggle('hidden', !user);
+
+    const btnMobEdit = document.getElementById('btnMobEditProfile');
+    if (btnMobEdit) btnMobEdit.classList.toggle('hidden', !user);
 
     // Mobile Profile View (`Perfil` tab)
     const mobAvatar = document.getElementById('mobProfileAvatar');
@@ -1111,6 +1131,34 @@
     document.getElementById('authModalBackdrop')?.classList.add('hidden');
   }
 
+  function openEditProfileModal() {
+    if (!state.currentUser) return;
+    const nameInput = document.getElementById('editProfileFullName');
+    const userInput = document.getElementById('editProfileUsername');
+    const errEl = document.getElementById('editProfileErrorMsg');
+    if (errEl) errEl.classList.add('hidden');
+
+    let currentName = state.currentUser.name || '';
+    let currentUsername = state.currentUser.username || '';
+
+    if (currentName.toLowerCase() === 'villafane' || currentName.toLowerCase() === 'jesus') {
+      currentName = 'Jesús Villafañe';
+    }
+    if (currentUsername.toLowerCase() === 'jesus' || currentUsername.toLowerCase() === 'villafane') {
+      currentUsername = 'jesusvillafane';
+    }
+
+    if (nameInput) nameInput.value = currentName;
+    if (userInput) userInput.value = currentUsername.replace(/^@/, '');
+
+    document.getElementById('editProfileModalBackdrop')?.classList.remove('hidden');
+    setTimeout(() => userInput?.focus(), 100);
+  }
+
+  function closeEditProfileModal() {
+    document.getElementById('editProfileModalBackdrop')?.classList.add('hidden');
+  }
+
   // ==========================================================================
   // 8. EVENT LISTENERS & INITIALIZATION
   // ==========================================================================
@@ -1397,6 +1445,96 @@
     document.getElementById('authModalBackdrop')?.addEventListener('click', e => {
       if (e.target.id === 'authModalBackdrop' && state.currentUser) {
         closeAuthModal();
+      }
+    });
+
+    // Edit Profile Modal events
+    document.getElementById('btnSidebarEditProfile')?.addEventListener('click', openEditProfileModal);
+    document.getElementById('btnMobEditProfile')?.addEventListener('click', openEditProfileModal);
+    document.getElementById('btnCloseEditProfileModal')?.addEventListener('click', closeEditProfileModal);
+    document.getElementById('btnCancelEditProfile')?.addEventListener('click', closeEditProfileModal);
+    document.getElementById('editProfileModalBackdrop')?.addEventListener('click', e => {
+      if (e.target.id === 'editProfileModalBackdrop') closeEditProfileModal();
+    });
+
+    document.getElementById('editProfileForm')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!state.currentUser) return;
+      const sb = window.MisVecinosSupabase;
+      if (!sb) return;
+
+      const nameInput = document.getElementById('editProfileFullName');
+      const userInput = document.getElementById('editProfileUsername');
+      const errEl = document.getElementById('editProfileErrorMsg');
+      const saveBtn = document.getElementById('btnSaveEditProfile');
+
+      const fullName = (nameInput?.value || '').trim();
+      const username = (userInput?.value || '').trim().replace(/^@/, '').toLowerCase();
+
+      if (!fullName) {
+        if (errEl) {
+          errEl.textContent = 'Ingresá tu nombre y apellido.';
+          errEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+        if (errEl) {
+          errEl.textContent = 'El @usuario debe tener entre 3 y 24 caracteres (letras, números o guión bajo).';
+          errEl.classList.remove('hidden');
+        }
+        return;
+      }
+
+      try {
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = 'Guardando...';
+        }
+        if (errEl) errEl.classList.add('hidden');
+
+        await sb.updateProfile({
+          userId: state.currentUser.id,
+          fullName,
+          username
+        });
+
+        state.currentUser.name = fullName;
+        state.currentUser.username = username;
+
+        renderUserAndBarrioContext();
+        await refreshFeedFromDatabase();
+        closeEditProfileModal();
+        showToast(`Perfil actualizado: @${username}`);
+      } catch (err) {
+        if (errEl) {
+          errEl.textContent = err.message || 'No se pudo actualizar el perfil. Elegí otro @usuario.';
+          errEl.classList.remove('hidden');
+        }
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Guardar Cambios';
+        }
+      }
+    });
+
+    // Auto-suggest username when typing in registration form
+    const regFullNameInput = document.getElementById('regFullName');
+    const regUsernameInput = document.getElementById('regUsername');
+    let regUserManuallyEdited = false;
+    regUsernameInput?.addEventListener('input', () => {
+      regUserManuallyEdited = true;
+    });
+    regFullNameInput?.addEventListener('input', () => {
+      if (!regUserManuallyEdited && regUsernameInput && (!regUsernameInput.value || regUsernameInput.value.length < 3)) {
+        const val = regFullNameInput.value.trim()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, '');
+        regUsernameInput.value = val;
       }
     });
 
