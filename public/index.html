@@ -57,7 +57,7 @@
 
       <button id="btnOpenAuthModal" class="pill-btn desktop-only-btn" type="button">
         <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>
-        <span id="topAuthBtnText">Mi Cuenta / Barrio</span>
+        <span id="topAuthBtnText">Iniciar Sesión</span>
       </button>
     </div>
   </header>
@@ -377,30 +377,38 @@
             <div>
               <h2 id="mobProfileName" style="font-size:1.15rem;">Invitado</h2>
               <div id="mobProfileHandle" class="profile-handle">@sin_sesion</div>
-              <span id="mobProfileBarrioBadge" class="barrio-badge" style="margin-top:6px;">Nueva Córdoba</span>
+              <span id="mobProfileBarrioBadge" class="barrio-badge" style="margin-top:6px; display:inline-flex; align-items:center; gap:5px;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+                <span id="mobProfileBarrioName">Nueva Córdoba</span>
+              </span>
             </div>
           </div>
-          <button id="btnMobOpenAuth" class="btn-gemini-primary" type="button">
-            Mi Cuenta / Sesión
+          <button id="btnMobOpenAuth" class="btn-gemini-primary" type="button" style="display:inline-flex; align-items:center; gap:7px;">
+            <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>
+            <span id="btnMobOpenAuthText">Iniciar Sesión</span>
           </button>
         </div>
 
         <div style="border-top:1px solid var(--border-subtle); padding-top:14px; display:flex; flex-direction:column; gap:12px;">
-          <span class="section-label">Preferencias &amp; Accesos Rápidos</span>
+          <span class="section-label">Preferencias y Accesos Rápidos</span>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <button id="btnMobThemeToggle" class="pill-btn" type="button" style="justify-content:center; padding:12px;">
-              <span>☼ / ☾ Cambiar Tema</span>
+            <button id="btnMobThemeToggle" class="pill-btn" type="button" style="justify-content:center; padding:12px; display:inline-flex; align-items:center; gap:8px;">
+              <span id="mobThemeIcon" style="display:inline-flex; align-items:center;">
+                <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+              </span>
+              <span id="mobThemeLabel">Cambiar Tema</span>
             </button>
-            <button id="btnMobOpenBarrioSheet" class="pill-btn" type="button" style="justify-content:center; padding:12px;">
-              <span>◎ Cambiar Distrito</span>
+            <button id="btnMobOpenBarrioSheet" class="pill-btn" type="button" style="justify-content:center; padding:12px; display:inline-flex; align-items:center; gap:8px;">
+              <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2"/></svg>
+              <span>Cambiar Barrio</span>
             </button>
-            <button id="btnMobGoClasificados" class="pill-btn" type="button" style="justify-content:center; padding:12px; grid-column:span 2;">
+            <button id="btnMobGoClasificados" class="pill-btn" type="button" style="justify-content:center; padding:12px; grid-column:span 2; display:inline-flex; align-items:center; gap:8px;">
               <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-              <span>Ver Compra / Venta &amp; Servicios del Barrio</span>
+              <span>Compra, Venta y Servicios del Barrio</span>
             </button>
-            <button id="btnInstallPwa" class="btn-gemini-primary hidden" type="button" style="justify-content:center; padding:12px; grid-column:span 2;">
+            <button id="btnInstallPwa" class="btn-gemini-primary hidden" type="button" style="justify-content:center; padding:12px; grid-column:span 2; display:inline-flex; align-items:center; gap:8px;">
               <svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Instalar App en mi Teléfono</span>
+              <span>Instalar App en el Dispositivo</span>
             </button>
           </div>
         </div>

@@ -262,12 +262,19 @@
     NativeBridge.syncStatusBar(state.theme);
     const icon = document.getElementById('themeIcon');
     const label = document.getElementById('themeLabel');
+    const mobIcon = document.getElementById('mobThemeIcon');
+    const mobLabel = document.getElementById('mobThemeLabel');
+
     if (state.theme === 'dark') {
-      if (icon) icon.innerHTML = ICONS.sun || '☼';
+      if (icon) icon.innerHTML = ICONS.sun || '';
       if (label) label.textContent = 'Modo Claro';
+      if (mobIcon) mobIcon.innerHTML = ICONS.sun || '';
+      if (mobLabel) mobLabel.textContent = 'Modo Claro';
     } else {
-      if (icon) icon.innerHTML = ICONS.moon || '☾';
+      if (icon) icon.innerHTML = ICONS.moon || '';
       if (label) label.textContent = 'Modo Oscuro';
+      if (mobIcon) mobIcon.innerHTML = ICONS.moon || '';
+      if (mobLabel) mobLabel.textContent = 'Modo Oscuro';
     }
   }
 
@@ -312,9 +319,12 @@
     document.getElementById('sidebarUsername').textContent = user ? '@' + user.username : '@invitado';
     document.getElementById('sidebarBarrioBadge').textContent = user ? userBarrio.name : activeBarrio.name;
     document.getElementById('composerAvatar').src = user ? user.avatar : defaultAvatar;
-    document.getElementById('topAuthBtnText').textContent = user
-      ? `${user.name.split(' ')[0]} · ${userBarrio.name}`
-      : 'Iniciar Sesión / Registro';
+    const topAuthBtn = document.getElementById('topAuthBtnText');
+    if (topAuthBtn) {
+      topAuthBtn.textContent = user
+        ? `Mi Cuenta (${user.name.split(' ')[0]})`
+        : 'Iniciar Sesión';
+    }
 
     // Mobile Profile View (`Perfil` tab)
     const mobAvatar = document.getElementById('mobProfileAvatar');
@@ -322,7 +332,14 @@
       mobAvatar.src = user ? user.avatar : defaultAvatar;
       document.getElementById('mobProfileName').textContent = user ? user.name : 'Sin sesión activa';
       document.getElementById('mobProfileHandle').textContent = user ? '@' + user.username : '@invitado';
-      document.getElementById('mobProfileBarrioBadge').textContent = `◎ ${user ? userBarrio.name : activeBarrio.name}`;
+      const mobBarrioName = document.getElementById('mobProfileBarrioName');
+      if (mobBarrioName) {
+        mobBarrioName.textContent = user ? userBarrio.name : activeBarrio.name;
+      }
+      const mobAuthBtnText = document.getElementById('btnMobOpenAuthText');
+      if (mobAuthBtnText) {
+        mobAuthBtnText.textContent = user ? 'Mi Cuenta' : 'Iniciar Sesión';
+      }
       document.getElementById('mobCpcInfo').textContent = activeBarrio.cpc;
       document.getElementById('mobCommissaryInfo').textContent = activeBarrio.commissary;
     }
@@ -466,15 +483,15 @@
     switch (category) {
       case 'Seguridad':
       case 'Cortes':
-        return { cls: 'cat-seguridad', icon: ICONS.alert || '△' };
+        return { cls: 'cat-seguridad', icon: ICONS.alert || '<svg class="mini-icon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>' };
       case 'Mascotas':
-        return { cls: 'cat-mascotas', icon: ICONS.paw || '◎' };
+        return { cls: 'cat-mascotas', icon: ICONS.paw || '<svg class="mini-icon" viewBox="0 0 24 24"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/></svg>' };
       case 'Recomendaciones':
-        return { cls: 'cat-recomendaciones', icon: ICONS.check || '✓' };
+        return { cls: 'cat-recomendaciones', icon: ICONS.star || '<svg class="mini-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' };
       case 'Servicios':
-        return { cls: 'cat-compraventa', icon: ICONS.bag || '◇' };
+        return { cls: 'cat-compraventa', icon: ICONS.bag || '<svg class="mini-icon" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>' };
       default:
-        return { cls: 'cat-novedades', icon: '' };
+        return { cls: 'cat-novedades', icon: ICONS.spark || '<svg class="mini-icon" viewBox="0 0 24 24"><path d="M12 3c.5 4.8 4.2 8.5 9 9-4.8.5-8.5 4.2-9 9-.5-4.8-4.2-8.5-9-9 4.8-.5 8.5-4.2 9-9Z"/></svg>' };
     }
   }
 
@@ -628,18 +645,18 @@
 
           <div class="post-actions-bar">
             <button type="button" class="action-btn btn-like-post ${post.likedByMe ? 'liked' : ''}" data-id="${escapeHtml(post.id)}">
-              ${ICONS.heart || '♡'}
+              <span class="action-icon" style="display:inline-flex;">${ICONS.heart || '<svg class="mini-icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z"/></svg>'}</span>
               <span>Apoyar</span>
               <span class="like-count-label">(${post.likes})</span>
             </button>
 
             <button type="button" class="action-btn btn-toggle-comments" data-id="${escapeHtml(post.id)}">
-              ${ICONS.chat || '💬'}
+              <span class="action-icon" style="display:inline-flex;">${ICONS.chat || '<svg class="mini-icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></svg>'}</span>
               <span>Comentar (${post.comments.length})</span>
             </button>
 
             <button type="button" class="action-btn btn-share-post" data-id="${escapeHtml(post.id)}">
-              ${ICONS.share || '↗'}
+              <span class="action-icon" style="display:inline-flex;">${ICONS.share || '<svg class="mini-icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>'}</span>
               <span>Compartir</span>
             </button>
           </div>
@@ -888,10 +905,10 @@
               <span>${escapeHtml(isOwn ? 'Vos (' + msg.senderName + ')' : msg.senderName)}</span>
               <span style="opacity:0.75; font-weight:500;">@${escapeHtml(msg.senderUsername)}</span>
             </div>
-            <div>${escapeHtml(msg.text)}</div>
+            <div class="chat-text">${escapeHtml(msg.text)}</div>
             <div class="chat-msg-meta">
               <span>${escapeHtml(formatClockTime(msg.timestamp))}</span>
-              ${isOwn ? `<span title="Guardado en Supabase">✓✓</span>` : ''}
+              ${isOwn ? `<span class="chat-checks" title="Enviado y verificado">✓✓</span>` : ''}
             </div>
           </div>
         </div>
