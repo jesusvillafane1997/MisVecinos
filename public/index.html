@@ -28,16 +28,14 @@
       </div>
     </div>
 
-    <!-- Center/Right Barrio HUD Pill (Opens Bottom-Sheet Barrio Drawer) -->
-    <div class="topbar-hud-center">
-      <button id="btnHeaderBarrioHud" class="barrio-hud-pill" type="button" title="Cambiar barrio o detectar ubicación">
-        <span class="live-dot"></span>
-        <span id="headerBarrioHudText">[ CBA // NUEVA CORDOBA ]</span>
-        <svg class="mini-icon" style="width:13px;height:13px;opacity:0.75;" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-    </div>
-
     <div class="topbar-actions">
+      <!-- Subtle Barrio HUD Location Pill (Off to the right next to the SOS button) -->
+      <button id="btnHeaderBarrioHud" class="barrio-hud-pill subtle-hud-pill" type="button" title="Cambiar barrio o detectar ubicación">
+        <span class="live-dot mini-dot"></span>
+        <span id="headerBarrioHudText">[ CBA // NUEVA CORDOBA ]</span>
+        <svg class="mini-icon" style="width:11px;height:11px;opacity:0.65;" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+
       <!-- Emergency Shield Icon (Mobile Slide-Down Drawer Trigger + Desktop Quick Toggle) -->
       <button id="btnEmergencyShield" class="shield-icon-btn" type="button" title="Contactos de Emergencia (101, 107, 103)" aria-expanded="false">
         <svg class="mini-icon mini-icon-lg" viewBox="0 0 24 24" aria-hidden="true">
