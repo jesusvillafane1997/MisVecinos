@@ -240,22 +240,28 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   background: var(--surface-card);
   border: 1px solid var(--border-subtle);
   font-family: var(--font-body);
-  font-size: 0.72rem;
+  font-size: 0.70rem;
   font-weight: 500;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
   color: var(--text-secondary);
   white-space: nowrap;
-  max-width: 175px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-shrink: 0;
+  width: auto;
+  max-width: none;
   transition: all 0.18s ease;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+#headerBarrioHudText {
+  white-space: nowrap;
+  display: inline-block;
+  line-height: 1.2;
 }
 
 [data-theme="dark"] .subtle-hud-pill {
@@ -1361,8 +1367,10 @@ body {
 
 .subtle-hud-pill {
   padding: 4px 8px;
-  font-size: 0.68rem;
-  max-width: 135px;
+  font-size: 0.67rem;
+  width: auto;
+  max-width: none;
+  flex-shrink: 0;
   gap: 5px;
 }
 
