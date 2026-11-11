@@ -1813,34 +1813,6 @@
       }
     });
 
-    // Google OAuth Login button
-    document.getElementById('btnSupabaseGoogleOAuth')?.addEventListener('click', async () => {
-      const errEl = document.getElementById('loginErrorMsg');
-      try {
-        await window.MisVecinosSupabase.signInWithOAuth('google');
-      } catch (err) {
-        errEl.style.color = 'var(--gemini-coral)';
-        errEl.textContent = '△ ' + (err.message || 'No se pudo iniciar OAuth con Google.');
-        errEl.classList.remove('hidden');
-      }
-    });
-
-    // Magic Link (OTP) Login button
-    document.getElementById('btnSupabaseMagicLink')?.addEventListener('click', async () => {
-      const identity = document.getElementById('loginIdentity').value.trim();
-      const errEl = document.getElementById('loginErrorMsg');
-      try {
-        await window.MisVecinosSupabase.sendMagicLink(identity);
-        errEl.style.color = '#3ecf8e';
-        errEl.textContent = `✓ Enlace mágico enviado a ${identity}. Revisá tu correo.`;
-        errEl.classList.remove('hidden');
-        showToast(`Magic Link enviado a ${identity}`);
-      } catch (err) {
-        errEl.style.color = 'var(--gemini-coral)';
-        errEl.textContent = '△ ' + (err.message || 'Error al enviar el Magic Link.');
-        errEl.classList.remove('hidden');
-      }
-    });
     // PWA Install Prompt (`#btnInstallPwa`)
     const installBtn = document.getElementById('btnInstallPwa');
     window.addEventListener('beforeinstallprompt', e => {
