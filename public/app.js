@@ -357,8 +357,19 @@
         mobBarrioName.textContent = user ? userBarrio.name : activeBarrio.name;
       }
       const mobAuthBtnText = document.getElementById('btnMobOpenAuthText');
+      const mobAuthBtnIcon = document.getElementById('btnMobOpenAuthIcon');
+      const mobAuthBtn = document.getElementById('btnMobOpenAuth');
       if (mobAuthBtnText) {
-        mobAuthBtnText.textContent = user ? 'Mi Cuenta' : 'Iniciar Sesión';
+        mobAuthBtnText.textContent = user ? 'Cerrar Sesión' : 'Iniciar Sesión';
+      }
+      if (mobAuthBtn && mobAuthBtnIcon) {
+        if (user) {
+          mobAuthBtn.className = 'pill-btn profile-action-btn profile-logout-btn';
+          mobAuthBtnIcon.innerHTML = '<svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+        } else {
+          mobAuthBtn.className = 'btn-gemini-primary profile-action-btn';
+          mobAuthBtnIcon.innerHTML = '<svg class="mini-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5"/></svg>';
+        }
       }
       document.getElementById('mobCpcInfo').textContent = activeBarrio.cpc;
       document.getElementById('mobCommissaryInfo').textContent = activeBarrio.commissary;
@@ -1440,7 +1451,21 @@
     // Open / Close Auth Modal
     document.getElementById('btnOpenAuthModal').addEventListener('click', openAuthModal);
     document.getElementById('btnSwitchAccount').addEventListener('click', openAuthModal);
-    document.getElementById('btnMobOpenAuth')?.addEventListener('click', openAuthModal);
+    document.getElementById('btnMobOpenAuth')?.addEventListener('click', async () => {
+      if (state.currentUser) {
+        const confirmed = confirm('¿Cerrar sesión de tu cuenta vecinal?');
+        if (!confirmed) return;
+        await window.MisVecinosSupabase?.signOut();
+        state.currentUser = null;
+        state.subscribedChatBarrioId = null;
+        renderUserAndBarrioContext();
+        renderSupabaseConnectionStatus();
+        await refreshFeedFromDatabase();
+        showToast('Sesión cerrada correctamente');
+      } else {
+        openAuthModal();
+      }
+    });
     document.getElementById('btnCloseAuthModal')?.addEventListener('click', closeAuthModal);
     document.getElementById('authModalBackdrop')?.addEventListener('click', e => {
       if (e.target.id === 'authModalBackdrop' && state.currentUser) {
