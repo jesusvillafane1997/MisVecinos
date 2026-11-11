@@ -57,3 +57,22 @@ jobs:
           name: MisVecinos-iOS-Unsigned
           path: build/MisVecinos-iOS.ipa
           retention-days: 14
+
+      - name: Build for iOS Simulator (Appetize.io)
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+            -scheme App \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+          cd build/DerivedData/Build/Products/Debug-iphonesimulator
+          zip -r ../../../../MisVecinos-Simulator.zip App.app
+
+      - name: Upload iOS Simulator Artifact (Appetize.io)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MisVecinos-iOS-Simulator
+          path: MisVecinos-Simulator.zip
+          retention-days: 14
