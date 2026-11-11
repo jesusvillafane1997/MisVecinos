@@ -69,12 +69,11 @@ jobs:
             ONLY_ACTIVE_ARCH=NO \
             CODE_SIGNING_ALLOWED=NO \
             build
-          cd build/DerivedData/Build/Products/Debug-iphonesimulator
-          zip -r ../../../../MisVecinos-Simulator.zip App.app
 
       - name: Upload iOS Simulator Artifact (Appetize.io)
         uses: actions/upload-artifact@v4
         with:
           name: MisVecinos-iOS-Simulator
-          path: MisVecinos-Simulator.zip
+          path: build/DerivedData/Build/Products/Debug-iphonesimulator/App.app
+          if-no-files-found: error
           retention-days: 14
